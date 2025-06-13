@@ -1,3 +1,44 @@
+variable "project" {
+    default = "roboshop"
+}
+
+variable "environment" {
+    
+}
+
+
+variable "common_tags"{
+    default = {
+        Project = "roboshop"
+        Terraform = "true"
+    }
+}
+
+variable "sg_name" {
+    default = "allow-all"
+}
+
+variable "sg_description" {
+    default = "allowing all ports from all IP address"
+}
+
+variable "instances" {
+    default = ["mongodb","redis"]
+}
+
+variable "from_port" {
+    default = 0
+}
+
+variable "to_port" {
+    default = 0
+}
+
+
+variable "cidr_blocks" {
+    default = ["0.0.0.0/0"]
+}
+
 variable "ami_id" {
   type        = string
   default     = "ami-09c813fb71547fc4f"
@@ -5,40 +46,5 @@ variable "ami_id" {
 }
 
 variable "instance_type" {
-  default = "t3.micro"
-}
-
-variable "ec2_tags" {
-  type = map(string)
-  default = {
-    Name    = " nginx " # Captain N mainsion chestene Terraform main ani name vashudi
-    Purpose = " Checking "
-  }
-
-}
-
-variable "sg_name" {
-  default = "allow-all New"
-}
-
-variable "sg_description" {
-  default = " New allowing all ports from internet"
-}
-
-variable "from_port" {
-  default = 0
-}
-
-variable "to_port" {
-  default = 0
-}
-
-variable "cidr_blocks" {
-  default = ["0.0.0.0/0"]
-}
-
-variable "sg_tags" {
-  default = {
-    Name = "allow-all"
-  }
+    
 }

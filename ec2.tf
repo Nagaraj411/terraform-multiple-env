@@ -1,48 +1,21 @@
-# This script will run to stored data in S3 EC2 aws site
-resource "aws_instance" "nginx" {
-  ami                    = var.ami_id
+resource "aws_instance" "roboshop" {
+  count                  = length(var.instances)
+  ami                    = var.ami_id # left and right side names no need to be same
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.allow_all.id]
 
-  tags = var.ec2_tags
-
-  provisioner "local-exec" {
-    command = "echo ${self.public_ip} > inventory"
-    #on_failure = continue #ignoring errors  
-    # if 10 line not given echo if show error after 11 line is ignowing error goes to 14-16 line it will display destroy  
-  }
-
-  provisioner "local-exec" {
-    command = "echo 'instance is destroyed'"
-    when    = destroy
-  } # this is upto Local connect process
-
-  connection {
-    type     = "ssh"
-    user     = "ec2-user"
-    password = "DevOps321"
-    host     = self.public_ip
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo dnf install nginx -y",
-      "sudo systemctl start nginx"
-    ]
-
-  }
-
-  provisioner "remote-exec" {
-    when = destroy
-    inline = [ 
-      "sudo systemctl stop nginx"
-    ]
-
-  }
-
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "${var.project}-${var.instances[count.index]}-${var.environment}"
+      Component = var.instances[count.index]
+      Environment = var.environment
+    }
+  )
 }
+# ALLOW ALL SG
 resource "aws_security_group" "allow_all" {
-  name        = var.sg_name
+  name        = "${var.project}-${var.sg_name}-${var.environment}" # allow-all-dev
   description = var.sg_description
 
   ingress {
@@ -60,5 +33,10 @@ resource "aws_security_group" "allow_all" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  tags = var.sg_tags
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "${var.project}-${var.sg_name}-${var.environment}"
+    }
+  )
 }
